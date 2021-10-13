@@ -2,6 +2,7 @@ import {Connection, createConnection} from 'typeorm';
 import 'reflect-metadata';
 import {Client, Guild, GuildMember, Intents, Interaction} from 'discord.js';
 import commands from './commands';
+import deployCommands from './DeployCommands';
 
 export default class Bot {
     public static readonly PREFIX = process.env.BOT_PREFIX || '%';
@@ -54,6 +55,7 @@ createConnection().then(async (dbConnection) => {
     Bot.client.on('guildMemberAdd', onMemberJoin);
     Bot.client.on('interactionCreate', onInteraction);
 
+    await deployCommands();
     await Bot.client.login(process.env.BOT_TOKEN || 'NO_TOKEN_PROVIDED'); // Login errors not caught, we want to crash if we can't log in
 
     // Prevent the bot from crashing on uncaught errors
