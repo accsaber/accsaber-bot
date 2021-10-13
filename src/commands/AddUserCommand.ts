@@ -24,6 +24,8 @@ export default class AddUserCommand implements Command {
                 .setRequired(true),
         );
 
+    public permissions = [];
+
     public async execute(interaction: CommandInteraction) {
         const user = interaction.options.getUser('user')!; // Required options so should be safe to assert not null
         const scoreSaber = interaction.options.getString('scoresaber')!;

@@ -30,6 +30,8 @@ export default class GetCommand implements Command {
                 ),
         );
 
+    public permissions = [];
+
     public async execute(interaction: CommandInteraction) {
         if (interaction.options.getSubcommand() === 'user') {
             const scoreSaber = interaction.options.getString('scoresaber')!; // Required options so should be safe to assert not null

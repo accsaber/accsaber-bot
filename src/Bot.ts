@@ -4,6 +4,7 @@ import {Client, Guild, GuildMember, Intents, Interaction, TextChannel} from 'dis
 import commands from './commands';
 import deployCommands from './DeployCommands';
 import logger from './Logger';
+import updatePermissions from './UpdatePermissions';
 
 export default class Bot {
     public static readonly PREFIX = process.env.BOT_PREFIX || '%';
@@ -49,8 +50,6 @@ async function onInteraction(interaction: Interaction): Promise<void> {
 
     if (!command) return;
 
-    // TODO: Staff only commands, etc.
-
     command.execute(interaction);
 }
 
@@ -76,6 +75,7 @@ createConnection().then(async (dbConnection) => {
 
     await deployCommands();
     await Bot.client.login(process.env.BOT_TOKEN || 'NO_TOKEN_PROVIDED'); // Login errors not caught, we want to crash if we can't log in
+    await updatePermissions();
 
     // Prevent the bot from crashing on uncaught errors
     process.on('unhandledRejection', (error) => logger.error('Uncaught Promise Rejection:', error));
