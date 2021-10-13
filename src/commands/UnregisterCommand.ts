@@ -20,10 +20,10 @@ export default class UnregisterCommand implements Command {
         const accSaberUser = await AccSaberUser.findOne(user.id);
         if (accSaberUser) {
             await accSaberUser.remove();
-            interaction.reply(this.SUCCESS_MESSAGE);
+            await interaction.reply(this.SUCCESS_MESSAGE);
             return;
         } else {
-            interaction.reply(this.NOT_REGISTERED_MESSAGE);
+            await interaction.reply(this.NOT_REGISTERED_MESSAGE);
             return;
         }
     }

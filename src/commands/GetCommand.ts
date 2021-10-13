@@ -46,7 +46,7 @@ export default class GetCommand implements Command {
             // Test if given an invalid ScoreSaber ID
             const scoreSaberID = Util.extractScoresaberID(scoreSaber);
             if (scoreSaberID === null) {
-                interaction.reply(this.INVALID_PROFILE_MESSAGE);
+                await interaction.reply(this.INVALID_PROFILE_MESSAGE);
                 return;
             }
 
@@ -55,13 +55,13 @@ export default class GetCommand implements Command {
             if (accSaberUser) {
                 const user = await Bot.client.users.fetch(accSaberUser.discordID);
                 if (!user) {
-                    interaction.reply(`Discord ID: ${accSaberUser.discordID}, user information could not be found.`);
+                    await interaction.reply(`Discord ID: ${accSaberUser.discordID}, user information could not be found.`);
                 } else {
-                    interaction.reply(`User: ${user.tag}\nID: ${accSaberUser.discordID}`);
+                    await interaction.reply(`User: ${user.tag}\nID: ${accSaberUser.discordID}`);
                 }
                 return;
             } else {
-                interaction.reply(this.NO_USER_MESSAGE);
+                await interaction.reply(this.NO_USER_MESSAGE);
                 return;
             }
         } else {
@@ -70,10 +70,10 @@ export default class GetCommand implements Command {
             // Find user
             const accSaberUser = await AccSaberUser.findOne(user.id);
             if (accSaberUser) {
-                interaction.reply(`https://scoresaber.com/u/${accSaberUser.scoreSaberID}`);
+                await interaction.reply(`https://scoresaber.com/u/${accSaberUser.scoreSaberID}`);
                 return;
             } else {
-                interaction.reply(this.NO_PROFILE_MESSAGE);
+                await interaction.reply(this.NO_PROFILE_MESSAGE);
                 return;
             }
         }

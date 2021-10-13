@@ -7,10 +7,6 @@ import logger from './Logger';
 import updatePermissions from './UpdatePermissions';
 import {ReactionMessage} from './entity/ReactionMessage';
 
-// TODO: Remove user command
-
-// TODO: Await on interaction.reply
-
 // TODO: Move event listeners into separate files
 
 export default class Bot {
@@ -69,7 +65,7 @@ async function onInteraction(interaction: Interaction): Promise<void> {
 
     if (!command) return;
 
-    command.execute(interaction);
+    await command.execute(interaction);
 }
 
 async function onMessageReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
@@ -105,11 +101,8 @@ async function onMessageReactionAdd(reaction: MessageReaction | PartialMessageRe
 const intents = new Intents();
 intents.add(Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_VOICE_STATES,
     Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.DIRECT_MESSAGES,
-    Intents.FLAGS.DIRECT_MESSAGE_REACTIONS);
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS);
 
 logger.info('Connecting to database...');
 createConnection().then(async (dbConnection) => {

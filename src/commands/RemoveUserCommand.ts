@@ -29,11 +29,11 @@ export default class RemoveUserCommand implements Command {
 
         const accSaberUser = await AccSaberUser.findOne(user.id);
         if (!accSaberUser) {
-            interaction.reply(this.NOT_REGISTERED_USER_MESSAGE);
+            await interaction.reply(this.NOT_REGISTERED_USER_MESSAGE);
             return;
         }
 
         await accSaberUser.remove();
-        interaction.reply(this.SUCCESS_MESSAGE);
+        await interaction.reply(this.SUCCESS_MESSAGE);
     }
 };
