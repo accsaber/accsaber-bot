@@ -19,7 +19,11 @@ async function onReady(): Promise<void> {
 
 
 async function onMemberJoin(guildMember: GuildMember): Promise<void> {
-    // TODO: Assign rookie role upon joining the server
+    if (!process.env.ROOKIE_ID) {
+        console.error('Rookie role ID missing from environment variables');
+        return;
+    }
+    guildMember.roles.add(process.env.ROOKIE_ID);
 }
 
 async function onInteraction(interaction: Interaction): Promise<void> {
@@ -45,6 +49,7 @@ intents.add(Intents.FLAGS.GUILDS,
     Intents.FLAGS.DIRECT_MESSAGES,
     Intents.FLAGS.DIRECT_MESSAGE_REACTIONS);
 
+// TODO: Swap to logger lib
 console.log('Connecting to database...');
 createConnection().then(async (dbConnection) => {
     console.log('Connected to database.');
