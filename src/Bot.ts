@@ -1,10 +1,17 @@
 import {Connection, createConnection} from 'typeorm';
 import 'reflect-metadata';
-import {Client, Guild, GuildMember, Intents, Interaction, TextChannel} from 'discord.js';
+import {Client, Guild, GuildMember, Intents, Interaction, MessageReaction, PartialMessageReaction, PartialUser, TextChannel, User} from 'discord.js';
 import commands from './commands';
 import deployCommands from './DeployCommands';
 import logger from './Logger';
 import updatePermissions from './UpdatePermissions';
+import {ReactionMessage} from './entity/ReactionMessage';
+
+// TODO: Remove user command
+
+// TODO: Await on interaction.reply
+
+// TODO: Move event listeners into separate files
 
 export default class Bot {
     public static readonly PREFIX = process.env.BOT_PREFIX || '%';
@@ -33,6 +40,16 @@ async function onReady(): Promise<void> {
     logger.info(`Ready! Member Count: ${Bot.guild.members.cache.size}.`);
 
     await updatePermissions(); // Can't be run before the guild has been fetched
+
+    // Cache channels with reaction messages
+    const channelIDs = new Set<string>(); // Using a set to only fetch each channel once
+    const reactionMessages = await ReactionMessage.find();
+    reactionMessages.forEach((reactionMessage) => {
+        channelIDs.add(reactionMessage.channelID);
+    });
+    for (const channelID of channelIDs) {
+        await Bot.guild.channels.fetch(channelID);
+    }
 }
 
 
@@ -55,6 +72,35 @@ async function onInteraction(interaction: Interaction): Promise<void> {
     command.execute(interaction);
 }
 
+async function onMessageReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
+    const reactionMessage = await ReactionMessage.findOne(reaction.message.id);
+    if (!reactionMessage) {
+        // No reaction role associated with that message
+        return;
+    }
+
+    const emoteID = reaction.emoji.id;
+    if (!emoteID) {
+        logger.warn('Emote has no id?!?');
+        return;
+    }
+    const reactionRole = reactionMessage.reactionRoles.find((reactionRole) => reactionRole.emoteID === emoteID);
+    if (!reactionRole) {
+        // No reaction role associated with that emote
+        return;
+    }
+
+    // Get member and toggle role
+    const member = await Bot.guild.members.fetch(user.id);
+    if (member.roles.cache.has(reactionRole.roleID)) {
+        await member.roles.remove(reactionRole.roleID);
+    } else {
+        await member.roles.add(reactionRole.roleID);
+    }
+
+    await reaction.users.remove(user.id);
+}
+
 // Set up intents
 const intents = new Intents();
 intents.add(Intents.FLAGS.GUILDS,
@@ -74,6 +120,7 @@ createConnection().then(async (dbConnection) => {
     Bot.client.once('ready', onReady);
     Bot.client.on('guildMemberAdd', onMemberJoin);
     Bot.client.on('interactionCreate', onInteraction);
+    Bot.client.on('messageReactionAdd', onMessageReactionAdd);
 
     await deployCommands();
     await Bot.client.login(process.env.BOT_TOKEN || 'NO_TOKEN_PROVIDED'); // Login errors not caught, we want to crash if we can't log in
