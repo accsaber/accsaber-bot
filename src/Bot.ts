@@ -1,26 +1,41 @@
 import {Connection, createConnection} from 'typeorm';
 import 'reflect-metadata';
-import {Client, Guild, GuildMember, Intents, Interaction} from 'discord.js';
+import {Client, Guild, GuildMember, Intents, Interaction, TextChannel} from 'discord.js';
 import commands from './commands';
 import deployCommands from './DeployCommands';
+import logger from './Logger';
 
 export default class Bot {
     public static readonly PREFIX = process.env.BOT_PREFIX || '%';
 
     public static client: Client;
     public static guild: Guild;
+    public static logChannel: TextChannel;
 
     public static dbConnection: Connection;
 }
 
 async function onReady(): Promise<void> {
-    console.log(`Ready! Server count: ${Bot.client.guilds.cache.size}. User Count: ${Bot.client.users.cache.size}.`);
+    if (!process.env.GUILD_ID || !process.env.LOG_CHANNEL_ID) {
+        console.error('Missing guild ID or log channel ID'); // Log channel hasn't been initialised yet so can't use logger
+        return;
+    }
+    Bot.guild = await Bot.client.guilds.fetch(process.env.GUILD_ID);
+    const channel = await Bot.guild.channels.fetch(process.env.LOG_CHANNEL_ID);
+    if (!channel || channel.type !== 'GUILD_TEXT') {
+        console.error('Log channel is not a text channel.');
+        return;
+    }
+    Bot.logChannel = channel;
+
+    await Bot.guild.members.fetch(); // Get and cache server members
+    logger.info(`Ready! Member Count: ${Bot.guild.members.cache.size}.`);
 }
 
 
 async function onMemberJoin(guildMember: GuildMember): Promise<void> {
     if (!process.env.ROOKIE_ID) {
-        console.error('Rookie role ID missing from environment variables');
+        logger.error('Rookie role ID missing from environment variables');
         return;
     }
     guildMember.roles.add(process.env.ROOKIE_ID);
@@ -49,10 +64,9 @@ intents.add(Intents.FLAGS.GUILDS,
     Intents.FLAGS.DIRECT_MESSAGES,
     Intents.FLAGS.DIRECT_MESSAGE_REACTIONS);
 
-// TODO: Swap to logger lib
-console.log('Connecting to database...');
+logger.info('Connecting to database...');
 createConnection().then(async (dbConnection) => {
-    console.log('Connected to database.');
+    logger.info('Connected to database.');
     Bot.dbConnection = dbConnection;
     Bot.client = new Client({intents});
 
@@ -64,9 +78,9 @@ createConnection().then(async (dbConnection) => {
     await Bot.client.login(process.env.BOT_TOKEN || 'NO_TOKEN_PROVIDED'); // Login errors not caught, we want to crash if we can't log in
 
     // Prevent the bot from crashing on uncaught errors
-    process.on('unhandledRejection', (error) => console.error('Uncaught Promise Rejection: ', error));
+    process.on('unhandledRejection', (error) => logger.error('Uncaught Promise Rejection:', error));
 }).catch((error) => {
-    console.error('Connection to database failed.');
-    console.error(error);
+    logger.error('Connection to database failed.');
+    logger.error(error);
     process.exit();
 });
