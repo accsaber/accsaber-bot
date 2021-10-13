@@ -31,6 +31,8 @@ async function onReady(): Promise<void> {
 
     await Bot.guild.members.fetch(); // Get and cache server members
     logger.info(`Ready! Member Count: ${Bot.guild.members.cache.size}.`);
+
+    await updatePermissions(); // Can't be run before the guild has been fetched
 }
 
 
@@ -75,12 +77,11 @@ createConnection().then(async (dbConnection) => {
 
     await deployCommands();
     await Bot.client.login(process.env.BOT_TOKEN || 'NO_TOKEN_PROVIDED'); // Login errors not caught, we want to crash if we can't log in
-    await updatePermissions();
 
     // Prevent the bot from crashing on uncaught errors
     process.on('unhandledRejection', (error) => logger.error('Uncaught Promise Rejection:', error));
 }).catch((error) => {
-    logger.error('Connection to database failed.');
+    logger.error('Application crashed.');
     logger.error(error);
     process.exit();
 });

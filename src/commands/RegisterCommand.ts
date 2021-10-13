@@ -1,40 +1,29 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
 import {CommandInteraction} from 'discord.js';
-import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import Util from '../Util';
 import Command from './Command';
 
-export default class AddUserCommand implements Command {
-    private SUCCESS_MESSAGE = 'Successfully registered user';
+export default class RegisterCommand implements Command {
+    private SUCCESS_MESSAGE = 'Successfully registered';
     private INVALID_PROFILE_MESSAGE = 'Please use a valid profile';
-    private ALREADY_REGISTERED_USER_MESSAGE = 'That user is already registered';
+    private ALREADY_REGISTERED_USER_MESSAGE = 'You\'re already registered';
     private ALREADY_REGISTERED_PROFILE_MESSAGE = 'That ScoreSaber profile is already registered';
 
     public slashCommandBuilder = new SlashCommandBuilder()
-        .setName('add-user')
-        .setDescription('Adds a user to the database.')
-        .setDefaultPermission(false)
-        .addUserOption((option) =>
-            option.setName('user')
-                .setDescription('User to add')
-                .setRequired(true),
-        )
+        .setName('register')
+        .setDescription('Register with the bot')
         .addStringOption((option) =>
             option.setName('scoresaber')
                 .setDescription('ScoreSaber Link or ID')
                 .setRequired(true),
         );
 
-    public permissions = [{
-        id: process.env.STAFF_ID!,
-        type: PermissionTypes.ROLE,
-        permission: true,
-    }];
+    public permissions = [];
 
     public async execute(interaction: CommandInteraction) {
-        const user = interaction.options.getUser('user')!; // Required options so should be safe to assert not null
-        const scoreSaber = interaction.options.getString('scoresaber')!;
+        const user = interaction.user;
+        const scoreSaber = interaction.options.getString('scoresaber')!; // Required option so should be safe to assert not null
 
         // Test if given an invalid ScoreSaber ID
         const scoreSaberID = Util.extractScoresaberID(scoreSaber);

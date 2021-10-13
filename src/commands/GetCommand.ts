@@ -1,5 +1,7 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
 import {CommandInteraction} from 'discord.js';
+import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
+import Bot from '../Bot';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import Util from '../Util';
 import Command from './Command';
@@ -12,6 +14,7 @@ export default class GetCommand implements Command {
     public slashCommandBuilder = new SlashCommandBuilder()
         .setName('get')
         .setDescription('Get a user or profile')
+        .setDefaultPermission(false)
         .addSubcommand((subcommand) =>
             subcommand.setName('user')
                 .setDescription('Get the user associated with a given profile')
@@ -30,7 +33,11 @@ export default class GetCommand implements Command {
                 ),
         );
 
-    public permissions = [];
+    public permissions = [{
+        id: process.env.STAFF_ID!,
+        type: PermissionTypes.ROLE,
+        permission: true,
+    }];
 
     public async execute(interaction: CommandInteraction) {
         if (interaction.options.getSubcommand() === 'user') {
@@ -46,7 +53,12 @@ export default class GetCommand implements Command {
             // Find user
             const accSaberUser = await AccSaberUser.findOne({scoreSaberID});
             if (accSaberUser) {
-                interaction.reply(accSaberUser.discordID);
+                const user = await Bot.client.users.fetch(accSaberUser.discordID);
+                if (!user) {
+                    interaction.reply(`Discord ID: ${accSaberUser.discordID}, user information could not be found.`);
+                } else {
+                    interaction.reply(`User: ${user.tag}\nID: ${accSaberUser.discordID}`);
+                }
                 return;
             } else {
                 interaction.reply(this.NO_USER_MESSAGE);
