@@ -26,13 +26,17 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "bufferutil": "^4.0.4",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.2.0",
     "dotenv": "^10.0.0",
+    "erlpack": "github:discord/erlpack",
     "mysql": "^2.18.1",
     "node-fetch": "^3.0.0",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.38",
-    "winston": "^3.3.3"
+    "utf-8-validate": "^5.0.6",
+    "winston": "^3.3.3",
+    "zlib-sync": "^0.1.7"
   }
 }
