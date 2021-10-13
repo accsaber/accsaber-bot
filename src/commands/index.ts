@@ -5,6 +5,7 @@ import GetCommand from './GetCommand';
 import PingCommand from './PingCommand';
 import RegisterCommand from './RegisterCommand';
 import RemoveRRCommand from './RemoveRRCommand';
+import RemoveUserCommand from './RemoveUserCommand';
 import UnregisterCommand from './UnregisterCommand';
 
 class Commands {
@@ -15,6 +16,7 @@ class Commands {
         new PingCommand(),
         new RegisterCommand(),
         new RemoveRRCommand(),
+        new RemoveUserCommand(),
         new UnregisterCommand(),
     ];
 }
