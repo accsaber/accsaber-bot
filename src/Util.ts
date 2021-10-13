@@ -21,20 +21,11 @@ export default class Util {
             return null;
         }
 
-        // The ID will be followed by either ? or & (or nothing)
-        // Find the index of the first character found (or -1)
-        // TODO: Replace with neater regex match
-        const possibleEndOfID = scoreSaber.indexOf('?');
-        const possibleEndOfID2 = scoreSaber.indexOf('&');
-        let endOfID;
-        if (possibleEndOfID === -1) {
-            endOfID = possibleEndOfID2;
-        } else {
-            if (possibleEndOfID2 === -1) {
-                endOfID = possibleEndOfID;
-            } else {
-                endOfID = possibleEndOfID < possibleEndOfID2 ? possibleEndOfID : possibleEndOfID2;
-            }
+        // The ID will be followed by either ?, &, or / (or nothing)
+        // Slice to the index of the first character found (or leave the string as it is)
+        const endOfID = scoreSaber.search(/[?&/]/);
+        if (endOfID !== -1) {
+            scoreSaber = scoreSaber.slice(0, endOfID);
         }
 
         // Slice to the first ? or & if one was found
