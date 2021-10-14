@@ -1,7 +1,7 @@
 import {GuildApplicationCommandPermissionData} from 'discord.js';
-import Bot from './Bot';
-import logger from './Logger';
-import commands from './commands';
+import Bot from '../Bot';
+import logger from './logger';
+import commands from '../commands';
 
 export default async function updatePermissions(): Promise<void> {
     const applicationCommands = await Bot.guild.commands.fetch();

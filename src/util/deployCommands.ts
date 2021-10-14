@@ -1,7 +1,7 @@
 import {REST} from '@discordjs/rest';
 import {Routes} from 'discord-api-types/v9';
-import commands from './commands';
-import logger from './Logger';
+import commands from '../commands';
+import logger from './logger';
 
 export default async function deployCommands(): Promise<void> {
     if (!process.env.BOT_TOKEN || !process.env.GUILD_ID || !process.env.CLIENT_ID) {

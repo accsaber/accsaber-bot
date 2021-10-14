@@ -1,6 +1,19 @@
 import winston from 'winston';
 import DiscordTransport from './DiscordTransport';
 
+/* syslog levels
+{
+  emerg: 0,
+  alert: 1,
+  crit: 2,
+  error: 3,
+  warning: 4,
+  notice: 5,
+  info: 6,
+  debug: 7
+}
+*/
+
 const logger = winston.createLogger({
     level: 'debug',
     levels: winston.config.syslog.levels,
@@ -18,19 +31,6 @@ const logger = winston.createLogger({
         new winston.transports.Console({level: 'debug'}),
     ],
 });
-
-/* syslog levels
-{
-  emerg: 0,
-  alert: 1,
-  crit: 2,
-  error: 3,
-  warning: 4,
-  notice: 5,
-  info: 6,
-  debug: 7
-}
-*/
 
 // If in production, send any message with notice level or below to the discord error channel.
 if (process.env.NODE_ENV === 'production') {

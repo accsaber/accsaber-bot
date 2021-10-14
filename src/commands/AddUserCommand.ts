@@ -2,7 +2,7 @@ import {SlashCommandBuilder} from '@discordjs/builders';
 import {CommandInteraction} from 'discord.js';
 import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
 import {AccSaberUser} from '../entity/AccSaberUser';
-import Util from '../Util';
+import extractScoreSaberID from '../util/extractScoreSaberID';
 import Command from './Command';
 
 export default class AddUserCommand implements Command {
@@ -37,7 +37,7 @@ export default class AddUserCommand implements Command {
         const scoreSaber = interaction.options.getString('scoresaber')!;
 
         // Test if given an invalid ScoreSaber ID
-        const scoreSaberID = Util.extractScoresaberID(scoreSaber);
+        const scoreSaberID = extractScoreSaberID(scoreSaber);
         if (scoreSaberID === null) {
             await interaction.reply(this.INVALID_PROFILE_MESSAGE);
             return;

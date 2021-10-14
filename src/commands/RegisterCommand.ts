@@ -1,7 +1,7 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
 import {CommandInteraction} from 'discord.js';
 import {AccSaberUser} from '../entity/AccSaberUser';
-import Util from '../Util';
+import extractScoreSaberID from '../util/extractScoreSaberID';
 import Command from './Command';
 
 export default class RegisterCommand implements Command {
@@ -26,16 +26,9 @@ export default class RegisterCommand implements Command {
         const scoreSaber = interaction.options.getString('scoresaber')!; // Required option so should be safe to assert not null
 
         // Test if given an invalid ScoreSaber ID
-        const scoreSaberID = Util.extractScoresaberID(scoreSaber);
+        const scoreSaberID = extractScoreSaberID(scoreSaber);
         if (scoreSaberID === null) {
             await interaction.reply(this.INVALID_PROFILE_MESSAGE);
-            return;
-        }
-
-        // Test if the user is already in the database
-        const dUser = await AccSaberUser.findOne(user.id);
-        if (dUser) {
-            await interaction.reply(this.ALREADY_REGISTERED_USER_MESSAGE);
             return;
         }
 
@@ -46,7 +39,14 @@ export default class RegisterCommand implements Command {
             return;
         }
 
-        const accSaberUser = new AccSaberUser();
+        // Test if the user is already in the database
+        let accSaberUser = await AccSaberUser.findOne(user.id);
+        if (accSaberUser) {
+            await interaction.reply(this.ALREADY_REGISTERED_USER_MESSAGE);
+            return;
+        }
+
+        accSaberUser = new AccSaberUser();
         accSaberUser.discordID = user.id;
         accSaberUser.scoreSaberID = scoreSaberID;
         await accSaberUser.save();

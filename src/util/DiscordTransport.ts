@@ -1,7 +1,7 @@
-import Bot from './Bot';
+import Bot from '../Bot';
 import Transport from 'winston-transport';
 
-// Additional winston transport to enable logging to discord error channel.
+// Winston transport to enable logging to a Discord channel.
 export default class DiscordTransport extends Transport {
     constructor(opts: Transport.TransportStreamOptions) {
         super(opts);
