@@ -36,4 +36,4 @@ export default class RemoveUserCommand implements Command {
         await accSaberUser.remove();
         await interaction.reply(this.SUCCESS_MESSAGE);
     }
-};
+}

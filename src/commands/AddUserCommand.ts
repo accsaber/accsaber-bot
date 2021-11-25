@@ -63,4 +63,4 @@ export default class AddUserCommand implements Command {
         await accSaberUser.save();
         await interaction.reply(this.SUCCESS_MESSAGE);
     }
-};
+}

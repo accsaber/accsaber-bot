@@ -52,4 +52,4 @@ export default class RegisterCommand implements Command {
         await accSaberUser.save();
         await interaction.reply(this.SUCCESS_MESSAGE);
     }
-};
+}

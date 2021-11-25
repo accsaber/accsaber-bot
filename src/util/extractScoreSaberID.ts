@@ -33,4 +33,4 @@ export default function extractScoreSaberID(scoreSaber: string): string | null {
 
 function isValidScoreSaberID(ID: string): boolean {
     return !(isNaN(parseInt(ID)) || ID.length < 15 || ID.length > 17);
-};
+}

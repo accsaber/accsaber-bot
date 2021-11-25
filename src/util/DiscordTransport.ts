@@ -21,7 +21,14 @@ export default class DiscordTransport extends Transport {
                 }
             }
         } catch (e) {
-            console.error(`Logger error: ${e}`);
+            if (typeof e === 'string') {
+                console.error(`Logger error: ${e}`);
+            } else if (e instanceof Error) {
+                console.error(`Logger error: ${e.message}`);
+            } else {
+                console.error('Logger error of unexpected type');
+                console.error(e);
+            }
         }
 
         callback();

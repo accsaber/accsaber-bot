@@ -4,7 +4,7 @@ import {Client, Guild, Intents, TextChannel} from 'discord.js';
 import deployCommands from './util/deployCommands';
 import logger from './util/logger';
 import onReady from './listeners/onReady';
-import onMemberJoin from './listeners/onMemberJoin';
+import onGuildMemberAdd from './listeners/onGuildMemberAdd';
 import onInteraction from './listeners/onInteraction';
 import onMessageReactionAdd from './listeners/onMessageReactionAdd';
 
@@ -23,7 +23,7 @@ async function main() {
         process.exit();
     });
     logger.info('Connected to database.');
-    
+
     const intents = new Intents();
     intents.add(
         Intents.FLAGS.GUILDS,
@@ -31,18 +31,18 @@ async function main() {
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     );
-    
+
     Bot.client = new Client({intents});
     Bot.client.once('ready', onReady);
-    Bot.client.on('guildMemberAdd', onMemberJoin);
+    Bot.client.on('guildMemberAdd', onGuildMemberAdd);
     Bot.client.on('interactionCreate', onInteraction);
     Bot.client.on('messageReactionAdd', onMessageReactionAdd);
-    
+
     await deployCommands();
     await Bot.client.login(process.env.BOT_TOKEN); // Login errors not caught, we want to crash if we can't log in
-    
+
     // Prevent the bot from crashing on uncaught errors
     process.on('unhandledRejection', (error) => logger.error('Uncaught Promise Rejection:', error));
 }
 
-main();
+void main();

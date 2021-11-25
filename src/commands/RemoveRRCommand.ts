@@ -73,4 +73,4 @@ export default class RemoveRRCommand implements Command {
             await interaction.reply('Successfully removed reaction role');
         }
     }
-};
+}

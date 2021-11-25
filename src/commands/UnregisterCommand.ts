@@ -27,4 +27,4 @@ export default class UnregisterCommand implements Command {
             return;
         }
     }
-};
+}

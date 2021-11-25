@@ -20,5 +20,5 @@ export default async function deployCommands(): Promise<void> {
 
 // Excute if run separately
 if (require.main === module) {
-    deployCommands();
+    void deployCommands();
 }

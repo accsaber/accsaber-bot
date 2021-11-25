@@ -53,19 +53,15 @@ export default class CreateRRCommand implements Command {
             return;
         }
 
-        // TODO: Confirm this works with invalid message IDs
-        const message = await (channel as TextChannel).messages.fetch(messageID);
-        if (!message) {
+        const message = await (channel as TextChannel).messages.fetch(messageID).catch(async () => {
             await interaction.reply(this.INVALID_MESSAGEID_MESSAGE);
-            return;
-        }
+        });
+        if (!message) return;
 
-        // TODO: Also confirm this works with invalid emote IDs
-        const emote = await Bot.guild.emojis.fetch(emoteID);
-        if (!emote) {
+        const emote = await Bot.guild.emojis.fetch(emoteID).catch(async () => {
             await interaction.reply(this.INVALID_EMOTEID_MESSAGE);
-            return;
-        }
+        });
+        if (!emote) return;
 
         // Find existing
         const reactionMessage = await ReactionMessage.findOne({messageID});
@@ -100,4 +96,4 @@ export default class CreateRRCommand implements Command {
             return;
         }
     }
-};
+}

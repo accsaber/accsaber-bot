@@ -78,4 +78,4 @@ export default class GetCommand implements Command {
             }
         }
     }
-};
+}
