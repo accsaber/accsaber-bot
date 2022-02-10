@@ -3,6 +3,7 @@ import AddUserCommand from './AddUserCommand';
 import CreateRRCommand from './CreateRRCommand';
 import GetCommand from './GetCommand';
 import PingCommand from './PingCommand';
+import RankupCommand from './RankupCommand';
 import RegisterCommand from './RegisterCommand';
 import RemoveRRCommand from './RemoveRRCommand';
 import RemoveUserCommand from './RemoveUserCommand';
@@ -14,6 +15,7 @@ class Commands {
         new CreateRRCommand(),
         new GetCommand(),
         new PingCommand(),
+        new RankupCommand(),
         new RegisterCommand(),
         new RemoveRRCommand(),
         new RemoveUserCommand(),
