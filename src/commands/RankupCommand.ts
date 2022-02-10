@@ -47,6 +47,10 @@ export default class RankupCommand implements Command {
         const response = await axios.get(`https://accsaber.com/api/0/player-campaign-infos/${accSaberUser.scoreSaberID}`);
         const milestones = response.data as Milestone[];
 
+        if (milestones.length === 0) {
+            await interaction.reply(`You haven't passed any milestones.`);
+            return;
+        }
 
         // Get current milestone
         let currentMilestone = -1;
