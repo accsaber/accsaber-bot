@@ -1,4 +1,4 @@
 interface Milestone {
-    id: number,
+    milestoneId: number,
     pathCleared: boolean
 }

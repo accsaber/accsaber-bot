@@ -65,22 +65,22 @@ export default class RankupCommand implements Command {
         // Iterate through milestones assigning new roles when necessary
         for (let i = 0; i < milestones.length; i++) {
             const milestone = milestones[i];
-            if (milestone.id > currentMilestone) {
+            if (milestone.milestoneId > currentMilestone) {
                 if (!milestone.pathCleared) {
                     if (interaction.replied) {
-                        await interaction.followUp(`You passed the <@&${RankupCommand.rankRoleIDs[milestone.id]}> milestone but you're missing at least one challenge on the way.`);
+                        await interaction.followUp(`You passed the <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}> milestone but you're missing at least one challenge on the way.`);
                     } else {
-                        await interaction.reply(`You passed the <@&${RankupCommand.rankRoleIDs[milestone.id]}> milestone but you're missing at least one challenge on the way.`);
+                        await interaction.reply(`You passed the <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}> milestone but you're missing at least one challenge on the way.`);
                     }
                     break;
                 }
-                await memberRoleManager.add(RankupCommand.rankRoleIDs[milestone.id]);
+                await memberRoleManager.add(RankupCommand.rankRoleIDs[milestone.milestoneId]);
                 if (currentMilestone !== -1 && currentMilestone !== 1) await memberRoleManager.remove(RankupCommand.rankRoleIDs[currentMilestone]);
-                currentMilestone = milestone.id;
+                currentMilestone = milestone.milestoneId;
                 if (interaction.replied) {
-                    await interaction.followUp(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.id]}>!`);
+                    await interaction.followUp(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!`);
                 } else {
-                    await interaction.reply(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.id]}>!`);
+                    await interaction.reply(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!`);
                 }
             }
         }
