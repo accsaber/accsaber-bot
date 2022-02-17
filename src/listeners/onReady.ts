@@ -17,8 +17,6 @@ export default async function onReady(): Promise<void> {
     Bot.logChannel = channel;
 
     await Bot.guild.members.fetch(); // Get and cache server members
-    logger.info(`Ready! Member Count: ${Bot.guild.members.cache.size}.`);
-
     await updatePermissions(); // Can't be run before the guild has been fetched
 
     // Cache channels with reaction messages
@@ -30,4 +28,6 @@ export default async function onReady(): Promise<void> {
     for (const channelID of channelIDs) {
         await Bot.guild.channels.fetch(channelID);
     }
+
+    logger.info(`Ready! Member Count: ${Bot.guild.members.cache.size}.`);
 }

@@ -6,22 +6,22 @@ import axios from 'axios';
 
 export default class RankupCommand implements Command {
     // ACC Discord
-    // public static rankRoleIDs = [
-    //     '913220799824015430', // Mercenary
-    //     '762916277462499349', // Acc Champ
-    //     '913221534447992832', // Elder
-    //     '913221671517835314', // God
-    //     '913221614051680256', // Celesial
-    // ];
+    public static rankRoleIDs = [
+        '913220799824015430', // Mercenary
+        '762916277462499349', // Acc Champ
+        '913221534447992832', // Elder
+        '913221671517835314', // God
+        '913221614051680256', // Celesial
+    ];
 
     // AccSaber Staff Discord
-    public static rankRoleIDs = [
-        '913262302038483005', // Mercenary
-        '913262266554667089', // Acc Champ
-        '913262253883654255', // Elder
-        '913262231045685268', // God
-        '913262179707392042', // Celesial
-    ];
+    // public static rankRoleIDs = [
+    //     '913262302038483005', // Mercenary
+    //     '913262266554667089', // Acc Champ
+    //     '913262253883654255', // Elder
+    //     '913262231045685268', // God
+    //     '913262179707392042', // Celesial
+    // ];
 
     public slashCommandBuilder = new SlashCommandBuilder()
         .setName('rankup')
@@ -44,8 +44,14 @@ export default class RankupCommand implements Command {
         }
 
         // Make request for milestones
-        const response = await axios.get(`https://accsaber.com/api/0/player-campaign-infos/${accSaberUser.scoreSaberID}`);
-        const milestones = response.data as Milestone[];
+        let milestones: Milestone[];
+        try {
+            const response = await axios.get(`https://campaigns.accsaber.com/0/player-campaign-infos/${accSaberUser.scoreSaberID}`);
+            milestones = response.data as Milestone[];
+        } catch (err) {
+            await interaction.reply('Unable to get milestones from AccSaber.');
+            return;
+        }
 
         if (milestones.length === 0) {
             await interaction.reply(`You haven't passed any milestones.`);
@@ -63,8 +69,7 @@ export default class RankupCommand implements Command {
         }
 
         // Iterate through milestones assigning new roles when necessary
-        for (let i = 0; i < milestones.length; i++) {
-            const milestone = milestones[i];
+        for (const milestone of milestones) {
             if (milestone.milestoneId > currentMilestone) {
                 if (!milestone.pathCleared) {
                     if (interaction.replied) {
@@ -75,7 +80,11 @@ export default class RankupCommand implements Command {
                     break;
                 }
                 await memberRoleManager.add(RankupCommand.rankRoleIDs[milestone.milestoneId]);
-                if (currentMilestone !== -1 && currentMilestone !== 1) await memberRoleManager.remove(RankupCommand.rankRoleIDs[currentMilestone]);
+                if (currentMilestone !== -1) {
+                    await memberRoleManager.remove(RankupCommand.rankRoleIDs[currentMilestone]);
+                } else {
+                    await memberRoleManager.remove(process.env.ROOKIE_ID!);
+                }
                 currentMilestone = milestone.milestoneId;
                 if (interaction.replied) {
                     await interaction.followUp(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!`);
@@ -83,6 +92,11 @@ export default class RankupCommand implements Command {
                     await interaction.reply(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!`);
                 }
             }
+        }
+
+        // Message if they haven't ranked up
+        if (!interaction.replied) {
+            await interaction.reply(`You haven't passed any new milestones.`);
         }
     }
 }

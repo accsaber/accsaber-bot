@@ -2,6 +2,7 @@ import Command from './Command';
 import AddUserCommand from './AddUserCommand';
 import CreateRRCommand from './CreateRRCommand';
 import GetCommand from './GetCommand';
+import GetRewardsCommand from './GetRewardsCommand';
 import PingCommand from './PingCommand';
 import RankupCommand from './RankupCommand';
 import RegisterCommand from './RegisterCommand';
@@ -14,6 +15,7 @@ class Commands {
         new AddUserCommand(),
         new CreateRRCommand(),
         new GetCommand(),
+        new GetRewardsCommand(),
         new PingCommand(),
         new RankupCommand(),
         new RegisterCommand(),

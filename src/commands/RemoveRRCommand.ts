@@ -1,5 +1,5 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction, TextChannel} from 'discord.js';
+import {CommandInteraction} from 'discord.js';
 import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
 import Bot from '../Bot';
 import {ReactionMessage} from '../entity/ReactionMessage';
@@ -57,7 +57,7 @@ export default class RemoveRRCommand implements Command {
         }
 
         // TODO: Confirm this works with invalid message IDs
-        const message = await (channel as TextChannel).messages.fetch(messageID);
+        const message = await channel.messages.fetch(messageID);
         if (!message) {
             await interaction.reply(this.INVALID_MESSAGEID_MESSAGE);
             return;

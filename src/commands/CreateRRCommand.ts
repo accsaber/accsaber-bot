@@ -1,5 +1,5 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction, TextChannel} from 'discord.js';
+import {CommandInteraction} from 'discord.js';
 import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
 import Bot from '../Bot';
 import {ReactionMessage} from '../entity/ReactionMessage';
@@ -53,7 +53,7 @@ export default class CreateRRCommand implements Command {
             return;
         }
 
-        const message = await (channel as TextChannel).messages.fetch(messageID).catch(async () => {
+        const message = await channel.messages.fetch(messageID).catch(async () => {
             await interaction.reply(this.INVALID_MESSAGEID_MESSAGE);
         });
         if (!message) return;
