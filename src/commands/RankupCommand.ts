@@ -81,7 +81,8 @@ export default class RankupCommand implements Command {
                 }
                 await memberRoleManager.add(RankupCommand.rankRoleIDs[milestone.milestoneId]);
                 if (currentMilestone !== -1) {
-                    await memberRoleManager.remove(RankupCommand.rankRoleIDs[currentMilestone]);
+                    // Don't remove the champ role on rankup
+                    if (currentMilestone !== 1) await memberRoleManager.remove(RankupCommand.rankRoleIDs[currentMilestone]);
                 } else {
                     await memberRoleManager.remove(process.env.ROOKIE_ID!);
                 }
