@@ -19,15 +19,13 @@ export default async function onReady(): Promise<void> {
     await Bot.guild.members.fetch(); // Get and cache server members
     await updatePermissions(); // Can't be run before the guild has been fetched
 
-    // Cache channels with reaction messages
-    const channelIDs = new Set<string>(); // Using a set to only fetch each channel once
+    // Cache reaction messages
     const reactionMessages = await ReactionMessage.find();
-    reactionMessages.forEach((reactionMessage) => {
-        channelIDs.add(reactionMessage.channelID);
-    });
-    for (const channelID of channelIDs) {
-        await Bot.guild.channels.fetch(channelID);
+    for (const reactionMessage of reactionMessages) {
+        const channel = await Bot.guild.channels.fetch(reactionMessage.channelID);
+        if (!channel) return;
+        if (channel.type !== 'GUILD_TEXT') return;
+        void channel.messages.fetch(reactionMessage.messageID);
     }
-
     logger.notice(`Ready! Member Count: ${Bot.guild.members.cache.size}.`);
 }
