@@ -8,7 +8,7 @@ export default class RankupCommand implements Command {
     // ACC Discord
     public static rankRoleIDs = [
         '913220799824015430', // Mercenary
-        '762916277462499349', // Acc Champ
+        '943949792814436413', // Acc Champ
         '913221534447992832', // Elder
         '913221671517835314', // God
         '913221614051680256', // Celesial
