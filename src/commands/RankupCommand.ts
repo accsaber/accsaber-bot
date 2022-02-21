@@ -68,35 +68,29 @@ export default class RankupCommand implements Command {
             }
         }
 
+        let reply = '';
         // Iterate through milestones assigning new roles when necessary
         for (const milestone of milestones) {
             if (milestone.milestoneId > currentMilestone) {
                 if (!milestone.pathCleared) {
-                    if (interaction.replied) {
-                        await interaction.followUp(`You passed the <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}> milestone but you're missing at least one challenge on the way.`);
-                    } else {
-                        await interaction.reply(`You passed the <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}> milestone but you're missing at least one challenge on the way.`);
-                    }
+                    reply += `You passed the <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}> milestone but you're missing at least one challenge on the way.\n`;
                     break;
                 }
                 await memberRoleManager.add(RankupCommand.rankRoleIDs[milestone.milestoneId]);
                 if (currentMilestone !== -1) {
-                    // Don't remove the champ role on rankup
+                    // Don't remove the champ role on rankup (1 = champ)
                     if (currentMilestone !== 1) await memberRoleManager.remove(RankupCommand.rankRoleIDs[currentMilestone]);
                 } else {
                     await memberRoleManager.remove(process.env.ROOKIE_ID!);
                 }
                 currentMilestone = milestone.milestoneId;
-                if (interaction.replied) {
-                    await interaction.followUp(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!`);
-                } else {
-                    await interaction.reply(`Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!`);
-                }
+                reply += `Congratulations on reaching <@&${RankupCommand.rankRoleIDs[milestone.milestoneId]}>!\n`;
             }
         }
 
-        // Message if they haven't ranked up
-        if (!interaction.replied) {
+        if (reply.length > 0) {
+            await interaction.reply(reply);
+        } else {
             await interaction.reply(`You haven't passed any new milestones.`);
         }
     }
