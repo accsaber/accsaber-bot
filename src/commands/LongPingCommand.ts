@@ -11,6 +11,6 @@ export default class LongPingCommand implements Command {
 
     public async execute(interaction: CommandInteraction) {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        await interaction.reply('Pong!');
+        await interaction.reply('Long pong!');
     }
 }
