@@ -13,10 +13,6 @@ export default class GetRewardsCommand implements Command {
     public permissions = [];
 
     public async execute(interaction: CommandInteraction) {
-        await interaction.reply('Rewards coming soon.');
-    }
-
-    /* public async execute(interaction: CommandInteraction) {
         const user = interaction.user;
 
         // Test if the user is already in the database
@@ -46,5 +42,5 @@ export default class GetRewardsCommand implements Command {
             if (milestone.pathCleared) await RewardDistributor.sendReward(accSaberUser, milestone.milestoneId);
         }
         await interaction.followUp('Sent.');
-    }*/
+    }
 }
