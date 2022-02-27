@@ -26,9 +26,22 @@ const logger = winston.createLogger({
     ),
     transports: [
         // Send all messages to console, write errors to error.log, write info and below to combined.log
-        new winston.transports.File({filename: 'error.log', level: 'error', format: winston.format.uncolorize()}),
-        new winston.transports.File({filename: 'combined.log', format: winston.format.uncolorize()}),
-        new winston.transports.Console({level: 'debug'}),
+        new winston.transports.File({filename: 'error.log', level: 'error', format: winston.format.combine(
+            winston.format.uncolorize(),
+            winston.format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss',
+            }))}),
+        new winston.transports.File({filename: 'combined.log', format: winston.format.combine(
+            winston.format.uncolorize(),
+            winston.format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss',
+            }))}),
+        new winston.transports.Console({level: 'debug', format: winston.format.combine(
+            winston.format.colorize(),
+            winston.format.timestamp({
+                format: 'YYYY-MM-DD HH:mm:ss',
+            })),
+        }),
     ],
 });
 

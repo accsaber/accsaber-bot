@@ -43,9 +43,17 @@ export default class GetRewardsCommand implements Command {
         }
 
         await interaction.reply('Sending rewards...');
+        let success = true;
         for (const milestone of milestones) {
-            if (milestone.pathCleared) await RewardDistributor.sendReward(accSaberUser, milestone.milestoneId);
+            if (milestone.pathCleared) {
+                success = await RewardDistributor.sendRewards(accSaberUser, milestone.milestoneId);
+                if (!success) break;
+            }
         }
-        await interaction.followUp('Sent.');
+        if (success) {
+            await interaction.followUp('Sent.');
+        } else {
+            await interaction.followUp('Error sending rewards, perhaps you have DMs with members of this server disabled?');
+        }
     }
 }
