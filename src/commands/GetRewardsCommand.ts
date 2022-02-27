@@ -37,6 +37,11 @@ export default class GetRewardsCommand implements Command {
             return;
         }
 
+        if (milestones.length === 1) {
+            await interaction.reply(`There are no rewards yet for mercenary.`);
+            return;
+        }
+
         await interaction.reply('Sending rewards...');
         for (const milestone of milestones) {
             if (milestone.pathCleared) await RewardDistributor.sendReward(accSaberUser, milestone.milestoneId);
