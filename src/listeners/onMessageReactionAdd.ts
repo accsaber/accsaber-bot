@@ -12,7 +12,7 @@ export default async function onMessageReactionAdd(reaction: MessageReaction | P
 
     const emoteID = reaction.emoji.id;
     if (!emoteID) {
-        logger.warn('Emote has no id?!?');
+        logger.warning('Emote has no id?!?');
         return;
     }
     const reactionRole = reactionMessage.reactionRoles.find((reactionRole) => reactionRole.emoteID === emoteID);
