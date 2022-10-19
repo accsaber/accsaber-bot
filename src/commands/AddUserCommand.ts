@@ -1,6 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction} from 'discord.js';
-import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
+import {CommandInteraction, SlashCommandBuilder} from 'discord.js';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import extractScoreSaberID from '../util/extractScoreSaberID';
 import Command from './Command';
@@ -14,7 +12,7 @@ export default class AddUserCommand implements Command {
     public slashCommandBuilder = new SlashCommandBuilder()
         .setName('add-user')
         .setDescription('Adds a user to the database.')
-        .setDefaultPermission(false)
+        .setDefaultMemberPermissions(0)
         .addUserOption((option) =>
             option.setName('user')
                 .setDescription('User to add')
@@ -26,13 +24,8 @@ export default class AddUserCommand implements Command {
                 .setRequired(true),
         );
 
-    public permissions = [{
-        id: process.env.STAFF_ID!,
-        type: PermissionTypes.ROLE,
-        permission: true,
-    }];
-
     public async execute(interaction: CommandInteraction) {
+        if (!interaction.isChatInputCommand()) return;
         const user = interaction.options.getUser('user')!; // Required options so should be safe to assert not null
         const scoreSaber = interaction.options.getString('scoresaber')!;
 
@@ -44,14 +37,14 @@ export default class AddUserCommand implements Command {
         }
 
         // Test if the user is already in the database
-        const dUser = await AccSaberUser.findOne(user.id);
+        const dUser = await AccSaberUser.findOne({where: {discordID: user.id}});
         if (dUser) {
             await interaction.reply(this.ALREADY_REGISTERED_USER_MESSAGE);
             return;
         }
 
         // Test if the ScoreSaber profile is already in the database
-        const dbScoreSaber = await AccSaberUser.findOne({scoreSaberID});
+        const dbScoreSaber = await AccSaberUser.findOne({where: {scoreSaberID: scoreSaberID}});
         if (dbScoreSaber) {
             await interaction.reply(this.ALREADY_REGISTERED_PROFILE_MESSAGE);
             return;

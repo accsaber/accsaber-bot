@@ -1,5 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction} from 'discord.js';
+import {CommandInteraction, SlashCommandBuilder} from 'discord.js';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import Command from './Command';
 
@@ -11,13 +10,11 @@ export default class UnregisterCommand implements Command {
         .setName('unregister')
         .setDescription('Unregister from the bot');
 
-    public permissions = [];
-
     public async execute(interaction: CommandInteraction) {
         const user = interaction.user;
 
         // Test if the user is already in the database
-        const accSaberUser = await AccSaberUser.findOne(user.id);
+        const accSaberUser = await AccSaberUser.findOne({where: {discordID: user.id}});
         if (accSaberUser) {
             await accSaberUser.remove();
             await interaction.reply(this.SUCCESS_MESSAGE);

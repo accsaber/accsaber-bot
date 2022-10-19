@@ -1,6 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction} from 'discord.js';
-import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
+import {CommandInteraction, SlashCommandBuilder} from 'discord.js';
 import Bot from '../Bot';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import extractScoreSaberID from '../util/extractScoreSaberID';
@@ -14,7 +12,7 @@ export default class GetCommand implements Command {
     public slashCommandBuilder = new SlashCommandBuilder()
         .setName('get')
         .setDescription('Get a user or profile')
-        .setDefaultPermission(false)
+        .setDefaultMemberPermissions(0)
         .addSubcommand((subcommand) =>
             subcommand.setName('user')
                 .setDescription('Get the user associated with a given profile')
@@ -33,13 +31,8 @@ export default class GetCommand implements Command {
                 ),
         );
 
-    public permissions = [{
-        id: process.env.STAFF_ID!,
-        type: PermissionTypes.ROLE,
-        permission: true,
-    }];
-
     public async execute(interaction: CommandInteraction) {
+        if (!interaction.isChatInputCommand()) return;
         if (interaction.options.getSubcommand() === 'user') {
             const scoreSaber = interaction.options.getString('scoresaber')!; // Required options so should be safe to assert not null
 
@@ -51,7 +44,7 @@ export default class GetCommand implements Command {
             }
 
             // Find user
-            const accSaberUser = await AccSaberUser.findOne({scoreSaberID});
+            const accSaberUser = await AccSaberUser.findOne({where: {scoreSaberID: scoreSaberID}});
             if (accSaberUser) {
                 const user = await Bot.client.users.fetch(accSaberUser.discordID);
                 if (!user) {
@@ -68,7 +61,7 @@ export default class GetCommand implements Command {
             const user = interaction.options.getUser('user')!;
 
             // Find user
-            const accSaberUser = await AccSaberUser.findOne(user.id);
+            const accSaberUser = await AccSaberUser.findOne({where: {discordID: user.id}});
             if (accSaberUser) {
                 await interaction.reply(`https://scoresaber.com/u/${accSaberUser.scoreSaberID}`);
                 return;

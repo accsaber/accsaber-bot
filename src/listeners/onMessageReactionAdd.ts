@@ -4,7 +4,7 @@ import {ReactionMessage} from '../entity/ReactionMessage';
 import logger from '../util/logger';
 
 export default async function onMessageReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Promise<void> {
-    const reactionMessage = await ReactionMessage.findOne(reaction.message.id);
+    const reactionMessage = await ReactionMessage.findOne({where: {messageID: reaction.message.id}});
     if (!reactionMessage) {
         // No reaction role associated with that message
         return;

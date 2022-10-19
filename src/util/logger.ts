@@ -22,7 +22,7 @@ const logger = winston.createLogger({
         winston.format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss',
         }),
-        winston.format.printf((info) => `${info.timestamp as string} ${info.level}: ${info.message}`),
+        winston.format.printf((info) => `${info.timestamp as string} ${info.level}: ${info.message as string}`),
     ),
     transports: [
         // Send all messages to console, write errors to error.log, write info and below to combined.log

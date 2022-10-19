@@ -1,6 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction} from 'discord.js';
-import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
+import {ChannelType, CommandInteraction, SlashCommandBuilder, TextChannel} from 'discord.js';
 import Bot from '../Bot';
 import {ReactionMessage} from '../entity/ReactionMessage';
 import Command from './Command';
@@ -12,7 +10,7 @@ export default class RemoveRRCommand implements Command {
     public slashCommandBuilder = new SlashCommandBuilder()
         .setName('remove-rr')
         .setDescription('Removes a reaction role')
-        .setDefaultPermission(false)
+        .setDefaultMemberPermissions(0)
         .addChannelOption((option) =>
             option.setName('channel')
                 .setDescription('The channel to add the reaction role in')
@@ -27,19 +25,14 @@ export default class RemoveRRCommand implements Command {
                 .setRequired(true),
         );
 
-    public permissions = [{
-        id: process.env.STAFF_ID!,
-        type: PermissionTypes.ROLE,
-        permission: true,
-    }];
-
     public async execute(interaction: CommandInteraction) {
+        if (!interaction.isChatInputCommand()) return;
         // Required options so should be safe to assert not null
         const channel = interaction.options.getChannel('channel')!;
         const messageID = interaction.options.getString('message-id')!;
         const emoteID = interaction.options.getString('emote-id')!;
 
-        const reactionMessage = await ReactionMessage.findOne({messageID});
+        const reactionMessage = await ReactionMessage.findOne({where: {messageID: messageID}});
         if (!reactionMessage) {
             await interaction.reply('Couldn\'t find a reaction role on that message');
             return;
@@ -51,13 +44,13 @@ export default class RemoveRRCommand implements Command {
             return;
         }
 
-        if (channel.type !== 'GUILD_TEXT') {
+        if (channel.type !== ChannelType.GuildText) {
             await interaction.reply(this.INVALID_CHANNEL_MESSAGE);
             return;
         }
 
         // TODO: Confirm this works with invalid message IDs
-        const message = await channel.messages.fetch(messageID);
+        const message = await (channel as TextChannel).messages.fetch(messageID);
         if (!message) {
             await interaction.reply(this.INVALID_MESSAGEID_MESSAGE);
             return;

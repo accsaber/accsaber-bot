@@ -1,6 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction} from 'discord.js';
-import {ApplicationCommandPermissionTypes as PermissionTypes} from 'discord.js/typings/enums';
+import {ChannelType, CommandInteraction, SlashCommandBuilder, TextChannel} from 'discord.js';
 import Bot from '../Bot';
 import {ReactionMessage} from '../entity/ReactionMessage';
 import {ReactionRole} from '../entity/ReactionRole';
@@ -14,11 +12,12 @@ export default class CreateRRCommand implements Command {
     public slashCommandBuilder = new SlashCommandBuilder()
         .setName('create-rr')
         .setDescription('Create a reaction role')
-        .setDefaultPermission(false)
+        .setDefaultMemberPermissions(0)
         .addChannelOption((option) =>
             option.setName('channel')
                 .setDescription('The channel to add the reaction role in')
-                .setRequired(true),
+                .setRequired(true)
+                .addChannelTypes(ChannelType.GuildText),
         ).addStringOption((option) =>
             option.setName('message-id')
                 .setDescription('The ID of the message to add the reaction role to')
@@ -33,13 +32,8 @@ export default class CreateRRCommand implements Command {
                 .setRequired(true),
         );
 
-    public permissions = [{
-        id: process.env.STAFF_ID!,
-        type: PermissionTypes.ROLE,
-        permission: true,
-    }];
-
     public async execute(interaction: CommandInteraction) {
+        if (!interaction.isChatInputCommand()) return;
         // Required options so should be safe to assert not null
         const channel = interaction.options.getChannel('channel')!;
         const messageID = interaction.options.getString('message-id')!;
@@ -48,12 +42,12 @@ export default class CreateRRCommand implements Command {
 
         // Confirm the arguments provided are valid
 
-        if (channel.type !== 'GUILD_TEXT') {
+        if (channel.type !== ChannelType.GuildText) {
             await interaction.reply(this.INVALID_CHANNEL_MESSAGE);
             return;
         }
 
-        const message = await channel.messages.fetch(messageID).catch(async () => {
+        const message = await (channel as TextChannel).messages.fetch(messageID).catch(async () => {
             await interaction.reply(this.INVALID_MESSAGEID_MESSAGE);
         });
         if (!message) return;
@@ -64,7 +58,7 @@ export default class CreateRRCommand implements Command {
         if (!emote) return;
 
         // Find existing
-        const reactionMessage = await ReactionMessage.findOne({messageID});
+        const reactionMessage = await ReactionMessage.findOne({where: {messageID: messageID}});
         if (reactionMessage) {
             const existingRoleID = reactionMessage.reactionRoles.find((reactionRole) => reactionRole.emoteID === emoteID);
             if (existingRoleID) {

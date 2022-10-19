@@ -1,5 +1,4 @@
-import {REST} from '@discordjs/rest';
-import {Routes} from 'discord-api-types/v9';
+import {REST, Routes} from 'discord.js';
 import commands from '../commands';
 import logger from './logger';
 
@@ -11,7 +10,7 @@ export default async function deployCommands(): Promise<void> {
 
     const slashCommands = commands.map((command) => command.slashCommandBuilder.toJSON());
 
-    const rest = new REST({version: '9'}).setToken(process.env.BOT_TOKEN);
+    const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
 
     await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID), {body: slashCommands})
         .then(() => logger.info('Successfully registered application commands.'))

@@ -1,5 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction} from 'discord.js';
+import {CommandInteraction, SlashCommandBuilder} from 'discord.js';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import extractScoreSaberID from '../util/extractScoreSaberID';
 import Command from './Command';
@@ -19,9 +18,8 @@ export default class RegisterCommand implements Command {
                 .setRequired(true),
         );
 
-    public permissions = [];
-
     public async execute(interaction: CommandInteraction) {
+        if (!interaction.isChatInputCommand()) return;
         const user = interaction.user;
         const scoreSaber = interaction.options.getString('scoresaber')!; // Required option so should be safe to assert not null
 
@@ -33,14 +31,14 @@ export default class RegisterCommand implements Command {
         }
 
         // Test if the ScoreSaber profile is already in the database
-        const dbScoreSaber = await AccSaberUser.findOne({scoreSaberID});
+        const dbScoreSaber = await AccSaberUser.findOne({where: {scoreSaberID: scoreSaberID}});
         if (dbScoreSaber) {
             await interaction.reply(this.ALREADY_REGISTERED_PROFILE_MESSAGE);
             return;
         }
 
         // Test if the user is already in the database
-        let accSaberUser = await AccSaberUser.findOne(user.id);
+        let accSaberUser = await AccSaberUser.findOne({where: {discordID: user.id}});
         if (accSaberUser) {
             await interaction.reply(this.ALREADY_REGISTERED_USER_MESSAGE);
             return;

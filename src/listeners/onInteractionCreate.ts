@@ -1,7 +1,7 @@
 import {Interaction} from 'discord.js';
 import commands from '../commands';
 
-export default async function onInteraction(interaction: Interaction): Promise<void> {
+export default async function onInteractionCreate(interaction: Interaction): Promise<void> {
     if (!interaction.isCommand()) return;
 
     const {commandName} = interaction;

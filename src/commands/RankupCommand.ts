@@ -1,5 +1,4 @@
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {CommandInteraction, GuildMemberRoleManager} from 'discord.js';
+import {CommandInteraction, GuildMemberRoleManager, SlashCommandBuilder} from 'discord.js';
 import {AccSaberUser} from '../entity/AccSaberUser';
 import Command from './Command';
 import axios from 'axios';
@@ -27,8 +26,6 @@ export default class RankupCommand implements Command {
         .setName('rankup')
         .setDescription('Get the role for the highest level you\'ve reached in the campaign');
 
-    public permissions = [];
-
     public async execute(interaction: CommandInteraction) {
         // Check command is being used in guild
         if (!interaction.member) {
@@ -37,7 +34,7 @@ export default class RankupCommand implements Command {
         }
 
         // Get SS ID
-        const accSaberUser = await AccSaberUser.findOne(interaction.user.id);
+        const accSaberUser = await AccSaberUser.findOne({where: {discordID: interaction.user.id}});
         if (!accSaberUser) {
             await interaction.reply('You\'re not registered, please register first.');
             return;
