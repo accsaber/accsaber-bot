@@ -1,0 +1,19 @@
+FROM node:20-slim AS build
+
+RUN apt-get update && apt-get -y install python3 build-essential
+
+WORKDIR /app
+COPY ["./package.json", "package-lock.json", "./"]
+RUN npm ci
+COPY . .
+
+RUN npm run build
+RUN npm prune --omit=dev
+
+FROM alpine
+WORKDIR /app/src
+COPY --from=build /app/src/superSecretRewardStuff ./superSecretRewardStuff
+WORKDIR /app/build
+COPY --from=build /app/build/superSecretRewardStuff ./superSecretRewardStuff
+
+CMD ["cp", "-r", "/app", "/mnt/"]

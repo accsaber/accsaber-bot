@@ -9,6 +9,7 @@ COPY . .
 RUN rm -r ./src/superSecretRewardStuff
 
 RUN npm run build
+ENV NODE_ENV=production
 RUN npm prune --omit=dev
 
 FROM node:20-slim
