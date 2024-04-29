@@ -30,7 +30,7 @@ async function main() {
     // Options are automatically ordered by priority (see docs for priority), so use first element
     const dataSourceOptions = allDataSourceOptions[0] as Mutable<DataSourceOptions>;
     // The socket path depends on whether the bot is running locally or deployed to prod
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && typeof process.env.TYPEORM_HOST === 'undefined') {
         dataSourceOptions.extra = {socketPath: '/run/mysqld/mysqld.sock'};
     }
     Bot.dataSource = new DataSource(dataSourceOptions);
