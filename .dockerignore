@@ -105,7 +105,3 @@ dist
 
 # Output files
 build
-
-# Super secret reward files
-/src/superSecretRewardStuff
-!/src/superSecretRewardStuff/index.d.ts
