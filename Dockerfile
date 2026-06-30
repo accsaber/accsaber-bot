@@ -6,7 +6,6 @@ WORKDIR /app
 COPY ["./package.json", "package-lock.json", "./"]
 RUN npm ci
 COPY . .
-RUN rm -r ./src/superSecretRewardStuff
 
 RUN npm run build
 ENV NODE_ENV=production
